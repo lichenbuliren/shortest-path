@@ -5,6 +5,7 @@ $(function() {
     g.initEdges();
     // 画出从起点开始的所有边
     g.bfs();
+
     // 计算从起点到终点最短路径
     g.pathTo();
     g.showGraph('grid-table');

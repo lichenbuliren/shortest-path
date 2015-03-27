@@ -54,21 +54,7 @@ function Graph(rows, cols, start, end, n) {
     }
 
     if (!this.barrierCount) {
-        this.barrierCount = getRandomNum(0, this.vertices / 2);
-    }
-
-    if (!this.end) {
-        this.end = getRandomNum(0, this.vertices);
-    }
-
-    if (!this.start) {
-        this.start = getRandomNum(0, this.vertices);
-    }
-
-    if (this.start > this.end) {
-        var temp = this.end;
-        this.end = this.start;
-        this.start = temp;
+        this.barrierCount = getRandomNum(0, this.vertices / 3);
     }
 }
 
@@ -99,9 +85,9 @@ Graph.prototype = {
      * @param  {number} n 障碍物个数
      * @return {[type]}   [description]
      */
-    initBarriers: function (n) {
+    initBarriers: function () {
         var count = 0;
-        while (count < n) {
+        while (count < this.barrierCount) {
             var i = getRandomNum(0, this.rows),
                 j = getRandomNum(0, this.cols);
             if (this.barrier.indexOf(this.grid[i][j]) < 0) {
@@ -129,7 +115,8 @@ Graph.prototype = {
             }
         }
 
-        this.initBarriers(this.barrierCount);
+        this.initBarriers();
+        this.initStartAndEnd();
 
         // 初始化边信息，避开障碍物
         for (var i = 0; i < this.rows; i++) {
@@ -148,6 +135,31 @@ Graph.prototype = {
                     this.addEdge(from, bottom);
                 }
             }
+        }
+    },
+
+    initStartAndEnd: function () {
+        if (!this.end) {
+            this.end = getRandomNum(0, this.vertices);
+        }
+
+        if (!this.start) {
+            this.start = getRandomNum(0, this.vertices);
+        }
+
+        // 判断起点和终点是否在障碍物内，如果是，重新随机起点和终点
+        while (this.barrier.indexOf(this.start) > 0) {
+            this.start = getRandomNum(0, this.vertices);
+        }
+
+        while (this.barrier.indexOf(this.end) > 0) {
+            this.end = getRandomNum(0, this.vertices);
+        }
+
+        if (this.start > this.end) {
+            var temp = this.end;
+            this.end = this.start;
+            this.start = temp;
         }
     },
 
@@ -220,7 +232,7 @@ Graph.prototype = {
         }
 
         if (!this.hasPathTo(end)) {
-            alert('没有路径到从' + start + '到' + end + ', 请重试！');
+            alert('节点被包围，没有路径到从' + start + '到' + end + ', 请重试！');
             return false;
         }
 
